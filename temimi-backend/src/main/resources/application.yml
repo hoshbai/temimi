@@ -1,0 +1,61 @@
+server:
+  port: 8080 # 后端服务端口
+
+# Spring 数据源配置 (MySQL)
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shiyou?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: Xinji200412@
+
+#Redis 配置 (Springboot 3.x 新格式)
+redis:
+  host: localhost
+  port: 6379
+  password: # 如果有密码请填写，没有则留空
+  database: 0
+  timeout: 5000ms
+  lettuce:
+    pool:
+      max-active: 8
+      max-wait: -1ms
+      max-idle: 8
+      min-idle: 0
+
+#JWT 配置
+jwt:
+  secret: ShiYouBackendSecretKey2025!@#$%ThisIsAVeryLongAndSecureSecretKeyForHS512Algorithm1234567890 # 用于签名的密钥，请务必修改为复杂字符串
+  expire: 315360000000 # Token过期时间，单位毫秒 (24小时)
+  exclude-urls: /api/user/login,/api/user/register
+  enabled: false
+
+#文件上传配置
+multipart:
+  max-file-size: 100MB # 单个文件最大100MB
+  max-request-size: 100MB # 单次请求最大100MB
+
+#日志配置
+logging:
+  level:
+    com.temimi.mapper: debug # 打印Mapper层SQL日志
+    org.springframework: info
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
+
+#MyBatis-Plus 配置 (Springboot 3.x 新格式)
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    db-config:
+      id-type: auto
+
+#Ali云OSS 配置 (需要先添加依赖)
+aliyi:
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com # 您的OSS地域节点
+    accessKeyId: yourAccessKeyId # 您的AccessKeyId
+    accessKeySecret: yourAccessKeySecret # 您的AccessKeySecret
+    bucketName: your-bucket-name # 您的bucket名称
