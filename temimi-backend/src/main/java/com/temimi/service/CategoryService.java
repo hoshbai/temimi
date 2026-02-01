@@ -35,4 +35,17 @@ public interface CategoryService extends IService<Category> {
      * @return 推荐标签列表
      */
     List<String> getRecommendTags(String scId);
+
+    /**
+     * 获取所有分类（包含所有数据）
+     * @return 所有分类列表
+     */
+    List<Category> getAllCategories();
+
+    /**
+     * 根据子分区ID获取主分区ID
+     * @param scId 子分区ID
+     * @return 主分区ID，如果不存在返回null
+     */
+    String getMcIdByScId(String scId);
 }

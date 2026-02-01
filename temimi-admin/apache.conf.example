@@ -1,0 +1,99 @@
+# Apache configuration example for Temimi Admin
+# This configuration supports Vue Router history mode
+
+<VirtualHost *:80>
+    ServerName admin.temimi.com
+    
+    # Root directory where the built files are located
+    DocumentRoot /var/www/temimi-admin/dist
+    
+    <Directory /var/www/temimi-admin/dist>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+        
+        # Enable rewrite engine for history mode
+        RewriteEngine On
+        
+        # If an existing asset or directory is requested, serve it
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        
+        # Otherwise, serve index.html
+        RewriteRule ^ index.html [L]
+    </Directory>
+    
+    # Proxy API requests to backend
+    ProxyPreserveHost On
+    ProxyPass /api/ http://localhost:8080/
+    ProxyPassReverse /api/ http://localhost:8080/
+    
+    # WebSocket support for danmu and instant messaging
+    RewriteEngine On
+    RewriteCond %{HTTP:Upgrade} =websocket [NC]
+    RewriteRule /ws/(.*) ws://localhost:8080/ws/$1 [P,L]
+    ProxyPass /ws/ http://localhost:8080/ws/
+    ProxyPassReverse /ws/ http://localhost:8080/ws/
+    
+    # Enable compression
+    <IfModule mod_deflate.c>
+        AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+    </IfModule>
+    
+    # Cache static assets
+    <IfModule mod_expires.c>
+        ExpiresActive On
+        ExpiresByType image/jpg "access plus 1 year"
+        ExpiresByType image/jpeg "access plus 1 year"
+        ExpiresByType image/gif "access plus 1 year"
+        ExpiresByType image/png "access plus 1 year"
+        ExpiresByType image/svg+xml "access plus 1 year"
+        ExpiresByType text/css "access plus 1 year"
+        ExpiresByType application/javascript "access plus 1 year"
+        ExpiresByType font/woff "access plus 1 year"
+        ExpiresByType font/woff2 "access plus 1 year"
+    </IfModule>
+    
+    # Security headers
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Error log
+    ErrorLog ${APACHE_LOG_DIR}/temimi-admin-error.log
+    CustomLog ${APACHE_LOG_DIR}/temimi-admin-access.log combined
+</VirtualHost>
+
+# HTTPS configuration (recommended for production)
+# Uncomment and configure after obtaining SSL certificate
+# <VirtualHost *:443>
+#     ServerName admin.temimi.com
+#     
+#     DocumentRoot /var/www/temimi-admin/dist
+#     
+#     SSLEngine on
+#     SSLCertificateFile /path/to/ssl/certificate.crt
+#     SSLCertificateKeyFile /path/to/ssl/private.key
+#     SSLCertificateChainFile /path/to/ssl/chain.crt
+#     
+#     # ... rest of configuration same as above ...
+# </VirtualHost>
+#
+# # Redirect HTTP to HTTPS
+# <VirtualHost *:80>
+#     ServerName admin.temimi.com
+#     Redirect permanent / https://admin.temimi.com/
+# </VirtualHost>
+
+# Required Apache modules:
+# - mod_rewrite
+# - mod_proxy
+# - mod_proxy_http
+# - mod_proxy_wstunnel (for WebSocket)
+# - mod_deflate (for compression)
+# - mod_expires (for caching)
+# - mod_headers (for security headers)
+# - mod_ssl (for HTTPS)
+#
+# Enable modules with:
+# a2enmod rewrite proxy proxy_http proxy_wstunnel deflate expires headers ssl

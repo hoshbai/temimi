@@ -1,5 +1,6 @@
 package com.temimi.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.temimi.constant.CommandType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)  // 忽略未知字段
 public class Command {
     
     /**
@@ -23,6 +25,11 @@ public class Command {
      * 消息内容
      */
     private String content;
+    
+    /**
+     * 对方用户ID（用于私信）
+     */
+    private Integer anotherId;
     
     /**
      * 使用CommandType枚举创建Command

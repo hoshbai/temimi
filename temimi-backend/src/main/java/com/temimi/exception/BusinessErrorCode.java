@@ -19,6 +19,8 @@ public enum BusinessErrorCode {
     VIDEO_FILE_INVALID(2004, "视频文件格式无效"),
     VIDEO_TITLE_EMPTY(2005, "视频标题不能为空"),
     VIDEO_CATEGORY_INVALID(2006, "视频分区无效"),
+    VIDEO_DELETE_FAILED(2007, "视频删除失败"),
+    PERMISSION_DENIED(2008, "权限不足"),
     
     // === 文件相关错误 (3xxx) ===
     FILE_UPLOAD_FAILED(3001, "文件上传失败"),
@@ -44,11 +46,17 @@ public enum BusinessErrorCode {
     // === 投币相关错误 (7xxx) ===
     COIN_COUNT_INVALID(7001, "投币数量无效"),
     COIN_INSUFFICIENT(7002, "硬币数量不足"),
-    
+    COIN_LIMIT_EXCEEDED(7003, "投币数量超过限制"),
+
+    // === 消息相关错误 (8xxx) ===
+    MESSAGE_NOT_FOUND(8001, "消息不存在"),
+    MESSAGE_PERMISSION_DENIED(8002, "无权操作该消息"),
+
     // === 系统错误 (9xxx) ===
     SYSTEM_ERROR(9001, "系统内部错误"),
     DATABASE_ERROR(9002, "数据库操作失败"),
-    NETWORK_ERROR(9003, "网络连接错误");
+    NETWORK_ERROR(9003, "网络连接错误"),
+    UNAUTHORIZED(9004, "未授权的操作");
     
     private final int code;
     private final String message;

@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version> <!-- 使用 Spring Boot 3.x 的稳定版本 -->
+        <version>3.2.5</version> <!-- 使用 Spring Boot 3.x 的稳定版本，需要Java 17 -->
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -41,6 +41,11 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+        <!-- Jackson Java 8 日期时间支持 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -60,7 +65,7 @@
         </dependency>
 
         <!-- ==================== 数据库相关依赖 ==================== -->
-        <!-- MyBatis-Plus 核心库 -->
+        <!-- MyBatis-Plus 核心库 (Spring Boot 3.x版本) -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
@@ -140,6 +145,13 @@
             <optional>true</optional> <!-- 可选依赖，不传递给其他项目 -->
         </dependency>
 
+        <!-- MP4Parser (用于读取视频元数据，获取视频时长) -->
+        <dependency>
+            <groupId>org.mp4parser</groupId>
+            <artifactId>isoparser</artifactId>
+            <version>1.9.56</version>
+        </dependency>
+
         <!-- Hutool (Java工具包) -->
         <dependency>
             <groupId>cn.hutool</groupId>
@@ -201,7 +213,14 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>5.4.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
 
     <build>
         <plugins>
@@ -209,9 +228,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <source>17</source>
+                    <target>17</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.temimi.model.entity.ChatDetailed;
 
+import java.util.Map;
+
 /**
  * 聊天详情服务接口
  */
 public interface ChatDetailedService extends IService<ChatDetailed> {
-    
+
     /**
      * 分页获取聊天记录
      * @param userId 用户ID
@@ -18,7 +20,16 @@ public interface ChatDetailedService extends IService<ChatDetailed> {
      * @return 分页聊天记录
      */
     Page<ChatDetailed> getChatHistory(Integer userId, Integer anotherId, int pageNum, int pageSize);
-    
+
+    /**
+     * 获取更多聊天记录
+     * @param userId 用户ID
+     * @param anotherId 对方用户ID
+     * @param offset 偏移量
+     * @return 包含聊天记录列表和是否还有更多的Map
+     */
+    Map<String, Object> getMoreChatDetails(Integer userId, Integer anotherId, Long offset);
+
     /**
      * 发送消息
      * @param userId 发送者ID
@@ -27,7 +38,7 @@ public interface ChatDetailedService extends IService<ChatDetailed> {
      * @return 是否成功
      */
     boolean sendMessage(Integer userId, Integer anotherId, String content);
-    
+
     /**
      * 撤回消息
      * @param messageId 消息ID
@@ -35,7 +46,7 @@ public interface ChatDetailedService extends IService<ChatDetailed> {
      * @return 是否成功
      */
     boolean withdrawMessage(Integer messageId, Integer userId);
-    
+
     /**
      * 删除消息（发送者删除）
      * @param messageId 消息ID
@@ -43,7 +54,7 @@ public interface ChatDetailedService extends IService<ChatDetailed> {
      * @return 是否成功
      */
     boolean deleteMessageBySender(Integer messageId, Integer userId);
-    
+
     /**
      * 删除消息（接收者删除）
      * @param messageId 消息ID

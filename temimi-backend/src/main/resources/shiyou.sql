@@ -11,7 +11,7 @@
  Target Server Version : 80042 (8.0.42)
  File Encoding         : 65001
 
- Date: 08/09/2025 21:01:23
+ Date: 02/12/2025 09:46:04
 */
 
 SET NAMES utf8mb4;
@@ -22,15 +22,15 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category`  (
-  `mc_id` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '主分区ID',
-  `sc_id` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '子分区ID',
-  `mc_name` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '主分区名称',
-  `sc_name` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '子分区名称',
-  `descr` varchar(200) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '描述',
-  `rcm_tag` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '推荐标签',
+  `mc_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主分区ID',
+  `sc_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '子分区ID',
+  `mc_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主分区名称',
+  `sc_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '子分区名称',
+  `descr` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '描述',
+  `rcm_tag` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '推荐标签',
   PRIMARY KEY (`mc_id`, `sc_id`) USING BTREE,
   INDEX `mc_id`(`mc_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '分区表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '分区表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of category
@@ -162,11 +162,14 @@ CREATE TABLE `chat`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `from_to`(`user_id` ASC, `another_id` ASC) USING BTREE,
   UNIQUE INDEX `id`(`id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '聊天表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '聊天表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of chat
 -- ----------------------------
+INSERT INTO `chat` VALUES (7, 14, 14, 1, 0, '2025-10-22 13:20:00');
+INSERT INTO `chat` VALUES (8, 15, 14, 0, 2, '2025-11-09 15:46:32');
+INSERT INTO `chat` VALUES (9, 14, 15, 0, 0, '2025-11-09 15:46:32');
 
 -- ----------------------------
 -- Table structure for chat_detailed
@@ -183,11 +186,58 @@ CREATE TABLE `chat_detailed`  (
   `time` datetime NOT NULL COMMENT '消息发送时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `id`(`id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '聊天记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '聊天记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of chat_detailed
 -- ----------------------------
+INSERT INTO `chat_detailed` VALUES (5, 15, 14, '你好', 0, 0, 0, '2025-10-30 15:56:43');
+INSERT INTO `chat_detailed` VALUES (6, 15, 14, 'nihao', 0, 0, 0, '2025-10-30 16:02:12');
+INSERT INTO `chat_detailed` VALUES (7, 15, 14, 'nihao', 0, 0, 0, '2025-10-30 16:10:01');
+INSERT INTO `chat_detailed` VALUES (8, 15, 14, 'nbijijida', 0, 0, 0, '2025-10-30 16:14:57');
+INSERT INTO `chat_detailed` VALUES (9, 15, 14, 'nihao', 0, 0, 0, '2025-10-30 16:19:50');
+INSERT INTO `chat_detailed` VALUES (10, 15, 14, '你好', 0, 0, 0, '2025-10-30 16:44:59');
+INSERT INTO `chat_detailed` VALUES (11, 14, 15, '游戏', 0, 0, 0, '2025-10-30 16:45:10');
+INSERT INTO `chat_detailed` VALUES (12, 14, 15, '游戏游戏', 0, 0, 0, '2025-10-30 17:10:08');
+INSERT INTO `chat_detailed` VALUES (13, 14, 15, '你个唐氏[微笑]', 0, 0, 0, '2025-10-31 10:10:21');
+INSERT INTO `chat_detailed` VALUES (14, 15, 14, '[微笑]', 0, 0, 0, '2025-10-31 10:12:49');
+INSERT INTO `chat_detailed` VALUES (15, 14, 15, '[原神_生气]', 0, 0, 0, '2025-11-01 12:10:29');
+INSERT INTO `chat_detailed` VALUES (16, 14, 15, '9805', 0, 0, 0, '2025-11-09 15:46:32');
+
+-- ----------------------------
+-- Table structure for coin_transaction
+-- ----------------------------
+DROP TABLE IF EXISTS `coin_transaction`;
+CREATE TABLE `coin_transaction`  (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '交易ID',
+  `uid` int NOT NULL COMMENT '用户ID',
+  `amount` double NOT NULL COMMENT '硬币数量（正数为收入，负数为支出）',
+  `type` tinyint NOT NULL COMMENT '交易类型 1每日登录 2投币给视频 3收到投币奖励 4收藏奖励',
+  `related_vid` int NULL DEFAULT NULL COMMENT '关联视频ID（如果有）',
+  `related_uid` int NULL DEFAULT NULL COMMENT '关联用户ID（如果有）',
+  `description` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '交易描述',
+  `create_time` datetime NOT NULL COMMENT '交易时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_uid`(`uid` ASC) USING BTREE,
+  INDEX `idx_vid`(`related_vid` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '硬币交易记录表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of coin_transaction
+-- ----------------------------
+INSERT INTO `coin_transaction` VALUES (1, 14, -1, 2, 11, 14, '投币给视频: 鸣潮', '2025-11-06 20:00:52');
+INSERT INTO `coin_transaction` VALUES (2, 14, 0.1, 3, 11, 14, '收到投币奖励 (10%)', '2025-11-06 20:00:52');
+INSERT INTO `coin_transaction` VALUES (3, 14, -1, 2, 11, 14, '投币给视频: 鸣潮', '2025-11-06 20:01:05');
+INSERT INTO `coin_transaction` VALUES (4, 14, 0.1, 3, 11, 14, '收到投币奖励 (10%)', '2025-11-06 20:01:05');
+INSERT INTO `coin_transaction` VALUES (5, 14, -1, 2, 11, 14, '投币给视频: 鸣潮', '2025-11-06 20:01:21');
+INSERT INTO `coin_transaction` VALUES (6, 14, 0.1, 3, 11, 14, '收到投币奖励 (10%)', '2025-11-06 20:01:22');
+INSERT INTO `coin_transaction` VALUES (7, 14, -1, 2, 11, 14, '投币给视频: 鸣潮', '2025-11-06 20:01:58');
+INSERT INTO `coin_transaction` VALUES (8, 14, 0.1, 3, 11, 14, '收到投币奖励 (10%)', '2025-11-06 20:01:58');
+INSERT INTO `coin_transaction` VALUES (9, 14, 1, 1, NULL, NULL, '每日登录奖励', '2025-11-06 20:14:54');
+INSERT INTO `coin_transaction` VALUES (10, 14, -1, 2, 11, 14, '投币给视频: 鸣潮', '2025-11-06 20:16:37');
+INSERT INTO `coin_transaction` VALUES (11, 14, 0.1, 3, 11, 14, '收到投币奖励 (10%)', '2025-11-06 20:16:37');
+INSERT INTO `coin_transaction` VALUES (12, 14, 1, 1, NULL, NULL, '每日登录奖励', '2025-11-09 14:59:29');
+INSERT INTO `coin_transaction` VALUES (13, 14, 1, 1, NULL, NULL, '每日登录奖励', '2025-12-02 09:23:56');
 
 -- ----------------------------
 -- Table structure for comment
@@ -208,11 +258,17 @@ CREATE TABLE `comment`  (
   `is_deleted` tinyint NOT NULL DEFAULT 0 COMMENT '软删除 0未删除 1已删除',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `id`(`id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评论表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评论表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of comment
 -- ----------------------------
+INSERT INTO `comment` VALUES (26, 11, 14, 0, 0, 14, '不是革命\r\n', 3, 0, '2025-11-06 17:04:49', 0, 1);
+INSERT INTO `comment` VALUES (27, 11, 14, 0, 0, 14, '？\r\n', 3, 1, '2025-11-09 15:00:11', 0, 0);
+INSERT INTO `comment` VALUES (28, 11, 14, 0, 0, 14, '你好', 0, 1, '2025-11-09 15:16:55', 0, 0);
+INSERT INTO `comment` VALUES (29, 11, 14, 28, 28, 14, '你好', 0, 1, '2025-11-09 15:17:02', 0, 0);
+INSERT INTO `comment` VALUES (30, 11, 14, 0, 0, 14, '评论\r\n', 0, 0, '2025-11-09 16:07:51', 0, 0);
+INSERT INTO `comment` VALUES (31, 11, 14, 27, 27, 14, '？', 1, 0, '2025-11-09 16:23:45', 0, 0);
 
 -- ----------------------------
 -- Table structure for danmu
@@ -230,12 +286,15 @@ CREATE TABLE `danmu`  (
   `state` tinyint NOT NULL DEFAULT 1 COMMENT '弹幕状态 1默认过审 2被举报审核中 3删除',
   `create_date` datetime NOT NULL COMMENT '发送弹幕的日期时间',
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `id`(`id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '弹幕表' ROW_FORMAT = Dynamic;
+  UNIQUE INDEX `id`(`id` ASC) USING BTREE,
+  INDEX `idx_vid`(`vid` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '弹幕表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of danmu
 -- ----------------------------
+INSERT INTO `danmu` VALUES (4, 11, 14, '你好', 25, 1, '#FFFFFF', 3.471168, 1, '2025-11-06 17:23:18');
+INSERT INTO `danmu` VALUES (7, 11, 14, '你会后悔', 25, 1, '#FFFFFF', 7.368429, 1, '2025-11-06 18:32:23');
 
 -- ----------------------------
 -- Table structure for favorite
@@ -253,11 +312,13 @@ CREATE TABLE `favorite`  (
   `is_delete` tinyint NOT NULL DEFAULT 0 COMMENT '是否删除 0否 1已删除',
   PRIMARY KEY (`fid`) USING BTREE,
   UNIQUE INDEX `fid`(`fid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '收藏夹' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '收藏夹' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of favorite
 -- ----------------------------
+INSERT INTO `favorite` VALUES (14, 14, 2, 1, NULL, '你好', '', 1, 1);
+INSERT INTO `favorite` VALUES (15, 14, 2, 1, NULL, '测试收藏功能', '', 2, 0);
 
 -- ----------------------------
 -- Table structure for favorite_video
@@ -272,11 +333,13 @@ CREATE TABLE `favorite_video`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `id`(`id` ASC) USING BTREE,
   UNIQUE INDEX `vid_fid__index`(`vid` ASC, `fid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '视频收藏夹关系表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '视频收藏夹关系表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of favorite_video
 -- ----------------------------
+INSERT INTO `favorite_video` VALUES (14, 11, 14, '2025-11-06 18:58:02', NULL);
+INSERT INTO `favorite_video` VALUES (15, 11, 15, '2025-11-06 21:47:24', 1);
 
 -- ----------------------------
 -- Table structure for msg_unread
@@ -297,6 +360,8 @@ CREATE TABLE `msg_unread`  (
 -- ----------------------------
 -- Records of msg_unread
 -- ----------------------------
+INSERT INTO `msg_unread` VALUES (14, 0, 0, 0, 0, 0, 0);
+INSERT INTO `msg_unread` VALUES (15, 0, 0, 0, 0, 1, 0);
 
 -- ----------------------------
 -- Table structure for user
@@ -304,30 +369,99 @@ CREATE TABLE `msg_unread`  (
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
   `uid` int NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `username` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '用户账号',
-  `password` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '用户密码',
-  `nickname` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '用户昵称',
-  `avatar` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '用户头像url',
-  `background` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '主页背景图url',
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户账号',
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户密码',
+  `nickname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户昵称',
+  `avatar` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '用户头像url',
+  `background` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '主页背景图url',
   `gender` tinyint NOT NULL DEFAULT 2 COMMENT '性别 0女 1男 2未知',
-  `description` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '个性签名',
+  `description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '个性签名',
   `exp` int NOT NULL DEFAULT 0 COMMENT '经验值',
   `coin` double NOT NULL DEFAULT 0 COMMENT '硬币数',
   `vip` tinyint NOT NULL DEFAULT 0 COMMENT '会员类型 0普通用户 1月度大会员 2季度大会员 3年度大会员',
   `state` tinyint NOT NULL DEFAULT 0 COMMENT '状态 0正常 1封禁 2注销',
   `role` tinyint NOT NULL DEFAULT 0 COMMENT '角色类型 0普通用户 1管理员 2超级管理员',
   `auth` tinyint NOT NULL DEFAULT 0 COMMENT '官方认证 0普通用户 1个人认证 2机构认证',
-  `auth_msg` varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '认证说明',
+  `auth_msg` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '认证说明',
   `create_date` datetime NOT NULL COMMENT '创建时间',
   `delete_date` datetime NULL DEFAULT NULL COMMENT '注销时间',
   PRIMARY KEY (`uid`) USING BTREE,
   UNIQUE INDEX `uid`(`uid` ASC) USING BTREE,
   UNIQUE INDEX `username`(`username` ASC) USING BTREE,
   UNIQUE INDEX `nickname`(`nickname` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
+-- ----------------------------
+INSERT INTO `user` VALUES (14, 'nini', '$2a$10$a/sQoS.hCnkQX1hbZzS1Eeu4f0FreeNE2b6mwBdA/elRANXe8fH9C', 'shy', '/avatars/avatar_14_1761195611161.jpg', '/backgrounds/bg_14_1762146751390.jpg', 2, '', 0, 8.499999999999998, 0, 0, 0, 0, NULL, '2025-10-17 17:08:57', NULL);
+INSERT INTO `user` VALUES (15, 'nihao', '$2a$10$4LNOAHSr1EpyQVM8fkkX2.IgI6CpBExZQdJTuUgLdATgVZ8N.jbuq', '千早躺赢', '/avatars/avatar_15_1761807830973.jpg', NULL, 2, '我去哈基米', 0, 0, 0, 0, 0, 0, NULL, '2025-10-30 14:59:58', NULL);
+
+-- ----------------------------
+-- Table structure for user_comment_like
+-- ----------------------------
+DROP TABLE IF EXISTS `user_comment_like`;
+CREATE TABLE `user_comment_like`  (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `uid` int NOT NULL COMMENT '用户ID',
+  `comment_id` int NOT NULL COMMENT '评论ID',
+  `type` tinyint NOT NULL COMMENT '类型 1点赞 2点踩',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_uid_comment_id`(`uid` ASC, `comment_id` ASC) USING BTREE COMMENT '用户和评论的唯一索引，防止重复点赞',
+  INDEX `idx_uid`(`uid` ASC) USING BTREE COMMENT '用户ID索引',
+  INDEX `idx_comment_id`(`comment_id` ASC) USING BTREE COMMENT '评论ID索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户评论点赞点踩表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of user_comment_like
+-- ----------------------------
+INSERT INTO `user_comment_like` VALUES (5, 14, 29, 2, '2025-11-09 16:50:20');
+INSERT INTO `user_comment_like` VALUES (6, 14, 28, 2, '2025-11-09 16:50:22');
+INSERT INTO `user_comment_like` VALUES (9, 14, 27, 2, '2025-12-02 09:37:41');
+
+-- ----------------------------
+-- Table structure for user_daily_login
+-- ----------------------------
+DROP TABLE IF EXISTS `user_daily_login`;
+CREATE TABLE `user_daily_login`  (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '唯一标识',
+  `uid` int NOT NULL COMMENT '用户ID',
+  `login_date` date NOT NULL COMMENT '登录日期',
+  `coin_rewarded` tinyint NOT NULL DEFAULT 0 COMMENT '是否已发放硬币奖励 0否 1是',
+  `create_time` datetime NOT NULL COMMENT '记录创建时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uid_date_index`(`uid` ASC, `login_date` ASC) USING BTREE,
+  INDEX `idx_uid`(`uid` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户每日登录记录表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of user_daily_login
+-- ----------------------------
+INSERT INTO `user_daily_login` VALUES (1, 14, '2025-11-06', 1, '2025-11-06 20:14:54');
+INSERT INTO `user_daily_login` VALUES (2, 14, '2025-11-09', 1, '2025-11-09 14:59:29');
+INSERT INTO `user_daily_login` VALUES (3, 14, '2025-12-02', 1, '2025-12-02 09:23:56');
+
+-- ----------------------------
+-- Table structure for user_follow
+-- ----------------------------
+DROP TABLE IF EXISTS `user_follow`;
+CREATE TABLE `user_follow`  (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '唯一标识',
+  `follower_id` int NOT NULL COMMENT '关注者UID (谁关注)',
+  `following_id` int NOT NULL COMMENT '被关注者UID (关注谁)',
+  `follow_time` datetime NOT NULL COMMENT '关注时间',
+  `is_mutual` tinyint NOT NULL DEFAULT 0 COMMENT '是否互相关注 0否 1是',
+  `status` tinyint NOT NULL DEFAULT 1 COMMENT '关注状态 0已取消 1已关注',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `id`(`id` ASC) USING BTREE,
+  UNIQUE INDEX `follower_following_index`(`follower_id` ASC, `following_id` ASC) USING BTREE,
+  INDEX `idx_follower`(`follower_id` ASC) USING BTREE,
+  INDEX `idx_following`(`following_id` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户关注关系表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of user_follow
 -- ----------------------------
 
 -- ----------------------------
@@ -349,11 +483,12 @@ CREATE TABLE `user_video`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `id`(`id` ASC) USING BTREE,
   UNIQUE INDEX `uid_vid__index`(`uid` ASC, `vid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户视频关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户视频关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user_video
 -- ----------------------------
+INSERT INTO `user_video` VALUES (33, 14, 11, 8, 1, 0, 2, 0, '2025-12-02 09:37:40', '2025-12-02 09:37:57', '2025-11-06 20:16:37');
 
 -- ----------------------------
 -- Table structure for video
@@ -362,25 +497,45 @@ DROP TABLE IF EXISTS `video`;
 CREATE TABLE `video`  (
   `vid` int NOT NULL AUTO_INCREMENT COMMENT '视频ID',
   `uid` int NOT NULL COMMENT '投稿用户ID',
-  `title` varchar(80) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '标题',
+  `title` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '标题',
   `type` tinyint NOT NULL DEFAULT 1 COMMENT '类型 1自制 2转载',
   `auth` tinyint NOT NULL DEFAULT 0 COMMENT '作者声明 0不声明 1未经允许禁止转载',
   `duration` double NOT NULL DEFAULT 0 COMMENT '播放总时长 单位秒',
-  `mc_id` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '主分区ID',
-  `sc_id` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '子分区ID',
-  `tags` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '标签 回车分隔',
-  `descr` varchar(2000) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL COMMENT '简介',
-  `cover_url` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '封面url',
-  `video_url` varchar(500) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL COMMENT '视频url',
+  `mc_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主分区ID',
+  `sc_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '子分区ID',
+  `tags` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '标签 回车分隔',
+  `descr` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '简介',
+  `cover_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '封面url',
+  `video_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '视频url',
   `status` tinyint NOT NULL DEFAULT 0 COMMENT '状态 0审核中 1已过审 2未通过 3已删除',
   `upload_date` datetime NOT NULL COMMENT '上传时间',
   `delete_date` datetime NULL DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`vid`) USING BTREE,
   UNIQUE INDEX `vid`(`vid` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb3 COLLATE = utf8mb3_general_ci COMMENT = '视频表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '视频表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of video
+-- ----------------------------
+INSERT INTO `video` VALUES (11, 14, '鸣潮', 1, 0, 11.217021, 'anime', 'finish', '测试', '你好', '/covers/5f23cafeb1f907549cb99907e1232075.jpg', '/videos/5f23cafeb1f907549cb99907e1232075.mp4', 1, '2025-11-06 17:02:56', NULL);
+
+-- ----------------------------
+-- Table structure for video_collect_milestone
+-- ----------------------------
+DROP TABLE IF EXISTS `video_collect_milestone`;
+CREATE TABLE `video_collect_milestone`  (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT '唯一标识',
+  `vid` int NOT NULL COMMENT '视频ID',
+  `milestone` int NOT NULL COMMENT '里程碑数量（50, 100, 150...）',
+  `rewarded` tinyint NOT NULL DEFAULT 0 COMMENT '是否已发放奖励 0否 1是',
+  `reward_time` datetime NULL DEFAULT NULL COMMENT '奖励发放时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `vid_milestone_index`(`vid` ASC, `milestone` ASC) USING BTREE,
+  INDEX `idx_vid`(`vid` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '视频收藏里程碑记录表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of video_collect_milestone
 -- ----------------------------
 
 -- ----------------------------
@@ -404,5 +559,6 @@ CREATE TABLE `video_stats`  (
 -- ----------------------------
 -- Records of video_stats
 -- ----------------------------
+INSERT INTO `video_stats` VALUES (11, 54, 4, 2, 0, 5, 0, 0, 5);
 
 SET FOREIGN_KEY_CHECKS = 1;

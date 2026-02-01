@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping({"/api/category", "/category"})
 public class CategoryController {
 
     @Autowired
@@ -23,6 +23,20 @@ public class CategoryController {
     public ApiResult<List<Category>> getMainCategories() {
         try {
             List<Category> categories = categoryService.getAllMainCategories();
+            return ApiResult.success(categories);
+        } catch (Exception e) {
+            return ApiResult.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 获取所有分类（包含所有数据）
+     * GET /api/category/all 或 /api/category/getall
+     */
+    @GetMapping({"/all", "/getall"})
+    public ApiResult<List<Category>> getAllCategories() {
+        try {
+            List<Category> categories = categoryService.getAllCategories();
             return ApiResult.success(categories);
         } catch (Exception e) {
             return ApiResult.error(e.getMessage());

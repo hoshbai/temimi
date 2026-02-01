@@ -2,6 +2,7 @@ package com.temimi.util;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -189,6 +190,16 @@ public class JwtUtil {
      */
     private SecretKey getSignKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+
+        // ✅ 安全增强：验证密钥长度（HS512 要求至少 64 字节）
+        if (keyBytes.length < 64) {
+            logger.error("JWT密钥长度不足！当前: {} 字节, 要求: 至少 64 字节 (HS512)", keyBytes.length);
+            throw new IllegalArgumentException(
+                String.format("JWT密钥长度必须至少 64 字节（HS512 要求），当前仅 %d 字节。" +
+                    "请在 application.yml 中设置更长的 jwt.secret", keyBytes.length)
+            );
+        }
+
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

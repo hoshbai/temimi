@@ -1,6 +1,7 @@
 package com.temimi.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -106,4 +107,12 @@ public class Video {
      */
     @TableField("delete_date")
     private LocalDateTime deleteDate;
+
+    // ==================== 非数据库字段 ====================
+
+    /**
+     * 视频统计数据（非数据库字段）
+     */
+    @TableField(exist = false)
+    private VideoStats stats;
 }

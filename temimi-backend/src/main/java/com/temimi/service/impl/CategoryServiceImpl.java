@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 @Service
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
@@ -20,10 +21,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     
     @Override
     public List<Category> getAllMainCategories() {
+        // 查询所有分类，然后在Java层去重获取主分区
         QueryWrapper<Category> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("DISTINCT mc_id", "mc_name")
-                   .orderByAsc("mc_id");
-        return categoryMapper.selectList(queryWrapper);
+        queryWrapper.orderByAsc("mc_id", "sc_id");
+        List<Category> allCategories = categoryMapper.selectList(queryWrapper);
+
+        // 使用 Stream API 按 mc_id 去重，保留第一个
+        return allCategories.stream()
+                .collect(Collectors.toMap(
+                    Category::getMcId,
+                    category -> category,
+                    (existing, replacement) -> existing
+                ))
+                .values()
+                .stream()
+                .sorted((c1, c2) -> c1.getMcId().compareTo(c2.getMcId()))
+                .collect(Collectors.toList());
     }
     
     @Override
@@ -47,10 +60,23 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         if (category == null || category.getRcmTag() == null) {
             return List.of();
         }
-        
+
         return Arrays.stream(category.getRcmTag().split("\n"))
                     .map(String::trim)
                     .filter(tag -> !tag.isEmpty())
                     .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Category> getAllCategories() {
+        QueryWrapper<Category> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByAsc("mc_id", "sc_id");
+        return categoryMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public String getMcIdByScId(String scId) {
+        Category category = getCategoryByScId(scId);
+        return category != null ? category.getMcId() : null;
     }
 }

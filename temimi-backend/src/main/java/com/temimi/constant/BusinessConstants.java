@@ -32,9 +32,9 @@ public class BusinessConstants {
     public static final String MSG_TYPE_WHISPER = "whisper";
     public static final String MSG_TYPE_DYNAMIC = "dynamic";
     
-    // === 布尔值常量 ===
-    public static final Boolean TRUE = true;
-    public static final Boolean FALSE = false;
+    // === 布尔值常量（用于数据库 tinyint 字段）===
+    public static final Integer TRUE = 1;
+    public static final Integer FALSE = 0;
     
     // === 投币数量常量 ===
     public static final int COIN_MIN_COUNT = 1;  // 最小投币数量

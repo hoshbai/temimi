@@ -1,33 +1,47 @@
 package com.temimi.service;
 
 import com.temimi.model.entity.MsgUnread;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * 消息未读数服务接口
  */
-public interface MsgUnreadService extends IService<MsgUnread> {
+public interface MsgUnreadService {
 
     /**
-     * 根据用户ID获取未读消息数
+     * 获取用户未读消息数
      * @param uid 用户ID
-     * @return MsgUnread 对象
+     * @return 未读消息统计
      */
     MsgUnread getUnreadCountByUid(Integer uid);
 
     /**
-     * 清除指定类型的未读数
+     * 清除某一类型的未读数
      * @param uid 用户ID
-     * @param category 消息类型 (reply, at, love, system, whisper, dynamic)
-     * @return 是否清除成功
+     * @param category 类别 reply/at/love/system/whisper/dynamic
+     * @return 是否成功
      */
     boolean clearUnreadCount(Integer uid, String category);
 
     /**
-     * 增加指定类型的未读数
+     * 增加某一类型的未读数
      * @param uid 用户ID
-     * @param category 消息类型
-     * @return 是否增加成功
+     * @param category 类别
+     * @return 是否成功
      */
     boolean incrementUnreadCount(Integer uid, String category);
+
+    /**
+     * 减少某一类型的未读数
+     * @param uid 用户ID
+     * @param category 类别
+     * @param count 减少的数量
+     * @return 是否成功
+     */
+    boolean decrementUnreadCount(Integer uid, String category, int count);
+
+    /**
+     * 初始化用户未读数记录
+     * @param uid 用户ID
+     */
+    void initUnreadRecord(Integer uid);
 }

@@ -1,91 +1,149 @@
 package com.temimi.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.temimi.constant.BusinessConstants;
-import com.temimi.exception.BusinessException;
-import com.temimi.exception.BusinessErrorCode;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.temimi.mapper.MsgUnreadMapper;
 import com.temimi.model.entity.MsgUnread;
 import com.temimi.service.MsgUnreadService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 消息未读数服务实现类
+ */
+@Slf4j
 @Service
-public class MsgUnreadServiceImpl extends ServiceImpl<MsgUnreadMapper, MsgUnread> implements MsgUnreadService {
+public class MsgUnreadServiceImpl implements MsgUnreadService {
 
     @Autowired
     private MsgUnreadMapper msgUnreadMapper;
 
     @Override
     public MsgUnread getUnreadCountByUid(Integer uid) {
-        return msgUnreadMapper.selectById(uid);
+        MsgUnread msgUnread = msgUnreadMapper.selectById(uid);
+        if (msgUnread == null) {
+            // 如果不存在，初始化
+            initUnreadRecord(uid);
+            msgUnread = msgUnreadMapper.selectById(uid);
+        }
+        return msgUnread;
     }
 
     @Override
-    @Transactional
     public boolean clearUnreadCount(Integer uid, String category) {
-        UpdateWrapper<MsgUnread> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("uid", uid);
+        LambdaUpdateWrapper<MsgUnread> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(MsgUnread::getUid, uid);
 
         switch (category) {
-            case BusinessConstants.MSG_TYPE_REPLY:
-                updateWrapper.set("reply", BusinessConstants.STATS_INITIAL_VALUE);
+            case "reply":
+                updateWrapper.set(MsgUnread::getReply, 0);
                 break;
-            case BusinessConstants.MSG_TYPE_AT:
-                updateWrapper.set("at", BusinessConstants.STATS_INITIAL_VALUE);
+            case "at":
+                updateWrapper.set(MsgUnread::getAt, 0);
                 break;
-            case BusinessConstants.MSG_TYPE_LOVE:
-                updateWrapper.set("love", BusinessConstants.STATS_INITIAL_VALUE);
+            case "love":
+                updateWrapper.set(MsgUnread::getLove, 0);
                 break;
-            case BusinessConstants.MSG_TYPE_SYSTEM:
-                updateWrapper.set("system", BusinessConstants.STATS_INITIAL_VALUE);
+            case "system":
+                updateWrapper.set(MsgUnread::getSystem, 0);
                 break;
-            case BusinessConstants.MSG_TYPE_WHISPER:
-                updateWrapper.set("whisper", BusinessConstants.STATS_INITIAL_VALUE);
+            case "whisper":
+                updateWrapper.set(MsgUnread::getWhisper, 0);
                 break;
-            case BusinessConstants.MSG_TYPE_DYNAMIC:
-                updateWrapper.set("dynamic", BusinessConstants.STATS_INITIAL_VALUE);
+            case "dynamic":
+                updateWrapper.set(MsgUnread::getDynamic, 0);
                 break;
             default:
-                throw new BusinessException(BusinessErrorCode.SYSTEM_ERROR, "不支持的消息类型: " + category);
+                log.warn("未知的未读消息类型: {}", category);
+                return false;
         }
 
-        int result = msgUnreadMapper.update(null, updateWrapper);
-        return result > 0;
+        return msgUnreadMapper.update(null, updateWrapper) > 0;
     }
 
     @Override
-    @Transactional
     public boolean incrementUnreadCount(Integer uid, String category) {
-        UpdateWrapper<MsgUnread> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("uid", uid);
+        MsgUnread msgUnread = getUnreadCountByUid(uid);
 
         switch (category) {
-            case BusinessConstants.MSG_TYPE_REPLY:
-                updateWrapper.setSql("reply = reply + 1");
+            case "reply":
+                msgUnread.setReply(msgUnread.getReply() + 1);
                 break;
-            case BusinessConstants.MSG_TYPE_AT:
-                updateWrapper.setSql("at = at + 1");
+            case "at":
+                msgUnread.setAt(msgUnread.getAt() + 1);
                 break;
-            case BusinessConstants.MSG_TYPE_LOVE:
-                updateWrapper.setSql("love = love + 1");
+            case "love":
+                msgUnread.setLove(msgUnread.getLove() + 1);
                 break;
-            case BusinessConstants.MSG_TYPE_SYSTEM:
-                updateWrapper.setSql("system = system + 1");
+            case "system":
+                msgUnread.setSystem(msgUnread.getSystem() + 1);
                 break;
-            case BusinessConstants.MSG_TYPE_WHISPER:
-                updateWrapper.setSql("whisper = whisper + 1");
+            case "whisper":
+                msgUnread.setWhisper(msgUnread.getWhisper() + 1);
                 break;
-            case BusinessConstants.MSG_TYPE_DYNAMIC:
-                updateWrapper.setSql("dynamic = dynamic + 1");
+            case "dynamic":
+                msgUnread.setDynamic(msgUnread.getDynamic() + 1);
                 break;
             default:
-                throw new BusinessException(BusinessErrorCode.SYSTEM_ERROR, "不支持的消息类型: " + category);
+                log.warn("未知的未读消息类型: {}", category);
+                return false;
         }
 
-        int result = msgUnreadMapper.update(null, updateWrapper);
-        return result > 0;
+        return msgUnreadMapper.updateById(msgUnread) > 0;
+    }
+
+    @Override
+    public boolean decrementUnreadCount(Integer uid, String category, int count) {
+        if (count <= 0) {
+            return true;
+        }
+        
+        MsgUnread msgUnread = getUnreadCountByUid(uid);
+        int currentCount = 0;
+
+        switch (category) {
+            case "reply":
+                currentCount = msgUnread.getReply();
+                msgUnread.setReply(Math.max(0, currentCount - count));
+                break;
+            case "at":
+                currentCount = msgUnread.getAt();
+                msgUnread.setAt(Math.max(0, currentCount - count));
+                break;
+            case "love":
+                currentCount = msgUnread.getLove();
+                msgUnread.setLove(Math.max(0, currentCount - count));
+                break;
+            case "system":
+                currentCount = msgUnread.getSystem();
+                msgUnread.setSystem(Math.max(0, currentCount - count));
+                break;
+            case "whisper":
+                currentCount = msgUnread.getWhisper();
+                msgUnread.setWhisper(Math.max(0, currentCount - count));
+                break;
+            case "dynamic":
+                currentCount = msgUnread.getDynamic();
+                msgUnread.setDynamic(Math.max(0, currentCount - count));
+                break;
+            default:
+                log.warn("未知的未读消息类型: {}", category);
+                return false;
+        }
+
+        return msgUnreadMapper.updateById(msgUnread) > 0;
+    }
+
+    @Override
+    public void initUnreadRecord(Integer uid) {
+        MsgUnread msgUnread = new MsgUnread();
+        msgUnread.setUid(uid);
+        msgUnread.setReply(0);
+        msgUnread.setAt(0);
+        msgUnread.setLove(0);
+        msgUnread.setSystem(0);
+        msgUnread.setWhisper(0);
+        msgUnread.setDynamic(0);
+        msgUnreadMapper.insert(msgUnread);
     }
 }

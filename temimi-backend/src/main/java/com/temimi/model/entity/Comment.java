@@ -88,4 +88,20 @@ public class Comment {
      */
     @TableField("is_deleted")
     private Boolean isDeleted;
+
+    // ==================== 以下是非数据库字段，用于前端显示 ====================
+
+    /**
+     * 评论用户昵称（非数据库字段）
+     * ✅ 新增：用于前端显示评论者昵称
+     */
+    @TableField(exist = false)
+    private String username;
+
+    /**
+     * 评论用户头像URL（非数据库字段）
+     * ✅ 新增：用于前端显示评论者头像
+     */
+    @TableField(exist = false)
+    private String userAvatar;
 }

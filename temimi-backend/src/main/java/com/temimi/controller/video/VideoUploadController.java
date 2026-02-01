@@ -2,6 +2,7 @@ package com.temimi.controller.video;
 
 import com.temimi.model.vo.ApiResult;
 import com.temimi.service.VideoService;
+import com.temimi.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class VideoUploadController {
     private VideoService videoService;
 
     // 配置文件中读取
-    @Value("${upload.video.max-size:104857600}") // 默认100MB
+    @Value("${upload.video.max-size:1073741824}") // 默认1GB
     private long maxVideoSize;
 
     @Value("${upload.cover.max-size:5242880}") // 默认5MB
@@ -43,6 +44,7 @@ public class VideoUploadController {
 
     /**
      * 上传视频
+     * ✅ 修复：从 SecurityContext 获取 UID，防止伪造
      */
     @PostMapping("/upload")
     public ApiResult<String> uploadVideo(
@@ -51,10 +53,12 @@ public class VideoUploadController {
             @RequestParam("scId") String scId,
             @RequestParam(value = "tags", required = false) String tags,
             @RequestParam(value = "descr", required = false) String descr,
-            @RequestParam(value = "cover", required = false) MultipartFile cover,
-            @RequestHeader("uid") Integer uid) {
+            @RequestParam(value = "cover", required = false) MultipartFile cover) {
 
         try {
+            // 0. 从 SecurityContext 获取当前登录用户 ID
+            Integer uid = SecurityUtil.getCurrentUserIdRequired();
+
             // 1. 基础参数验证
             validateBasicParams(title, scId);
 

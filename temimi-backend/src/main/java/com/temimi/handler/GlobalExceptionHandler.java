@@ -35,14 +35,14 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResult<String> handleValidationException(MethodArgumentNotValidException e) {
+    public ApiResult<String> handleValidationException(MethodArgumentNotValidException e, HttpServletRequest request) {
         String message = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
 
-        logger.warn("参数校验失败: {}", message);
+        logger.warn("参数校验失败: {} - {}", request.getRequestURI(), message);
         return ApiResult.error(400, "参数校验失败: " + message);
     }
 
@@ -51,14 +51,14 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResult<String> handleBindException(BindException e) {
+    public ApiResult<String> handleBindException(BindException e, HttpServletRequest request) {
         String message = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
 
-        logger.warn("参数绑定失败: {}", message);
+        logger.warn("参数绑定失败: {} - {}", request.getRequestURI(), message);
         return ApiResult.error(400, "参数错误: " + message);
     }
 
@@ -67,8 +67,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiResult<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
-        logger.warn("文件上传大小超限: {}", e.getMessage());
+    public ApiResult<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e, HttpServletRequest request) {
+        logger.warn("文件上传大小超限: {} - {}", request.getRequestURI(), e.getMessage());
         return ApiResult.error(400, "上传文件过大，请选择较小的文件");
     }
 
@@ -90,6 +90,37 @@ public class GlobalExceptionHandler {
     public ApiResult<String> handleSecurityException(SecurityException e, HttpServletRequest request) {
         logger.warn("权限异常: {} - {}", request.getRequestURI(), e.getMessage());
         return ApiResult.error(401, "无权访问");
+    }
+
+    /**
+     * 空指针异常
+     */
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResult<String> handleNullPointerException(NullPointerException e, HttpServletRequest request) {
+        logger.error("空指针异常: {} - {}", request.getRequestURI(), e.getMessage(), e);
+        return ApiResult.error(500, "系统内部错误");
+    }
+
+    /**
+     * 数据库异常
+     */
+    @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiResult<String> handleDataAccessException(org.springframework.dao.DataAccessException e, HttpServletRequest request) {
+        logger.error("数据库异常: {} - {}", request.getRequestURI(), e.getMessage(), e);
+        return ApiResult.error(500, "数据库操作失败");
+    }
+
+    /**
+     * 客户端连接中断异常（视频流传输中断）
+     * 这是正常现象，用户暂停/跳转视频时会发生，不需要记录错误日志
+     */
+    @ExceptionHandler(org.apache.catalina.connector.ClientAbortException.class)
+    public void handleClientAbortException(org.apache.catalina.connector.ClientAbortException e, HttpServletRequest request) {
+        // 只记录DEBUG级别日志，不返回响应（连接已断开）
+        logger.debug("客户端连接中断: {} (正常现象)", request.getRequestURI());
+        // 不返回ApiResult，因为客户端已断开连接
     }
 
     /**

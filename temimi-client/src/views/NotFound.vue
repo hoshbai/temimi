@@ -1,46 +1,54 @@
-<!-- src/views/NotFound.vue -->
-
 <template>
-  <div class="not-found-container">
-    <h1>404 - 页面未找到</h1>
-    <p>抱歉，您访问的页面不存在。</p>
-    <router-link to="/" class="home-link">返回首页</router-link>
-  </div>
+    <div class="notfound">
+        <HeaderBar :isFixHeaderBar="true"></HeaderBar>
+        <div class="notfound__body">
+            <div class="notfound-container">
+                <img src="~assets/img/404.png" alt="">
+                <div style="text-align: center; padding: 0 0 40px 0;">
+                    <button class="goback" @click="$router.go(-1)">返回上一页</button>
+                </div>
+            </div>           
+        </div>
+    </div>
 </template>
 
-<script setup>
-// 这里可以添加一些逻辑，比如记录404日志
+<script>
+    import HeaderBar from '@/components/headerBar/HeaderBar.vue';
+
+    export default {
+        name: "NotFound",
+        components: {
+            HeaderBar,
+        }
+    }
 </script>
 
 <style scoped>
-.not-found-container {
-  padding: 50px 20px;
-  text-align: center;
+.notfound__body {
+    width: 100%;
+    background-color: #fafafa;
 }
 
-.not-found-container h1 {
-  font-size: 48px;
-  color: #f5222d;
-  margin-bottom: 20px;
+.notfound-container {
+    width: 65%;
+    margin: 94px auto;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 10px;
 }
 
-.not-found-container p {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 30px;
+.notfound-container img {
+    width: 100%;
+    filter: drop-shadow(0 0 12px rgba(255, 102, 153, 0.4));
 }
 
-.home-link {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #1890ff;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-.home-link:hover {
-  background-color: #40a9ff;
+.goback {
+    padding: 12px 20px;
+    border-radius: 4px;
+    background-color: var(--brand_pink);
+    cursor: pointer;
+    color: #fff;
 }
 </style>

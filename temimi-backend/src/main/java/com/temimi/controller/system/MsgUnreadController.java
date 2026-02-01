@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/msg")
+@RequestMapping("/api/msg-unread")
 public class MsgUnreadController {
 
     @Autowired
@@ -15,10 +15,10 @@ public class MsgUnreadController {
 
     /**
      * 获取用户的所有未读消息数
-     * GET /api/msg/unread
+     * GET /api/msg-unread/all
      */
-    @GetMapping("/unread")
-    public ApiResult<MsgUnread> getUnreadCount(@RequestHeader("uid") Integer uid) {
+    @GetMapping("/all")
+    public ApiResult<MsgUnread> getUnreadCount(@RequestAttribute("uid") Integer uid) {
         try {
             MsgUnread msgUnread = msgUnreadService.getUnreadCountByUid(uid);
             if (msgUnread == null) {
@@ -32,11 +32,12 @@ public class MsgUnreadController {
 
     /**
      * 清除指定类型的未读数
-     * POST /api/msg/unread/clear?category=reply
+     * POST /api/msg-unread/clear?category=reply
      */
-    @PostMapping("/unread/clear")
-    public ApiResult<String> clearUnreadCount(@RequestHeader("uid") Integer uid, @RequestParam String category) {
+    @PostMapping("/clear")
+    public ApiResult<String> clearUnreadCount(@RequestParam String category) {
         try {
+            Integer uid = com.temimi.util.SecurityUtil.getCurrentUserIdRequired();
             boolean success = msgUnreadService.clearUnreadCount(uid, category);
             if (success) {
                 return ApiResult.success("清除成功");

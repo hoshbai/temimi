@@ -1,18 +1,33 @@
-// src/main.js
-
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
-import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-
-import './assets/css/global.css'
+import { ElMessage } from 'element-plus'
+import 'element-plus/theme-chalk/index.css'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import axios from 'axios'
+import { get, post } from './network/request'
+import router from './router'
+import pinia from './stores'
+// 全局样式表
+import "./assets/css/base.css"
 
 const app = createApp(App)
 
-app.use(router)
-app.use(createPinia())
-app.use(ElementPlus)
+// 添加全局变量
+app.config.globalProperties.$message = ElMessage
+app.config.globalProperties.$axios = axios
+app.config.globalProperties.$get = get
+app.config.globalProperties.$post = post
 
+// ✅ Vuex 已完全迁移到 Pinia，不再需要兼容层
+
+// 注册全部element图标
+app.use(ElementPlus, { locale: zhCn })
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
+
+app.use(pinia)
+app.use(router)
 app.mount('#app')

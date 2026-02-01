@@ -1,11 +1,16 @@
 package com.temimi.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * 用户表实体类
@@ -78,6 +83,33 @@ public class User {
     private Double coin;
 
     /**
+     * 获取格式化后的硬币数（保留一位小数）
+     * 覆盖 Lombok 生成的 getter
+     */
+    public Double getCoin() {
+        if (coin == null) {
+            return 0.0;
+        }
+        // 使用 BigDecimal 精确计算，四舍五入保留一位小数
+        BigDecimal bd = new BigDecimal(coin.toString());
+        return bd.setScale(1, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    /**
+     * 设置硬币数（自动格式化为一位小数）
+     * 覆盖 Lombok 生成的 setter
+     */
+    public void setCoin(Double coin) {
+        if (coin == null) {
+            this.coin = 0.0;
+        } else {
+            // 使用 BigDecimal 精确计算，四舍五入保留一位小数
+            BigDecimal bd = new BigDecimal(coin.toString());
+            this.coin = bd.setScale(1, RoundingMode.HALF_UP).doubleValue();
+        }
+    }
+
+    /**
      * 会员类型 0普通用户 1月度大会员 2季度大会员 3年度大会员
      */
     @TableField("vip")
@@ -118,4 +150,60 @@ public class User {
      */
     @TableField("delete_date")
     private LocalDateTime deleteDate;
+    
+    /**
+     * 关注数（不对应数据库字段）
+     */
+    @TableField(exist = false)
+    private Integer followsCount;
+    
+    /**
+     * 粉丝数（不对应数据库字段）
+     */
+    @TableField(exist = false)
+    private Integer fansCount;
+    
+    /**
+     * 前端兼容字段：avatar_url
+     * 不对应数据库字段，仅用于前端兼容
+     */
+    @TableField(exist = false)
+    private String avatar_url;
+    
+    /**
+     * 前端兼容字段：bg_url
+     * 不对应数据库字段，仅用于前端兼容
+     */
+    @TableField(exist = false)
+    private String bg_url;
+    
+    /**
+     * 获取 avatar_url（映射到 avatar）
+     */
+    @JsonProperty("avatar_url")
+    public String getAvatar_url() {
+        return this.avatar;
+    }
+    
+    /**
+     * 设置 avatar_url（映射到 avatar）
+     */
+    public void setAvatar_url(String avatarUrl) {
+        this.avatar = avatarUrl;
+    }
+    
+    /**
+     * 获取 bg_url（映射到 background）
+     */
+    @JsonProperty("bg_url")
+    public String getBg_url() {
+        return this.background;
+    }
+    
+    /**
+     * 设置 bg_url（映射到 background）
+     */
+    public void setBg_url(String bgUrl) {
+        this.background = bgUrl;
+    }
 }

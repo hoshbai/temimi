@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 /**
  * 分区表实体类
  * 对应数据库表: category
+ * 注意：此表使用联合主键(mc_id, sc_id)，MyBatis-Plus 不支持联合主键，因此不使用 @TableId
  */
 @Data
 @NoArgsConstructor
@@ -17,13 +18,13 @@ import lombok.AllArgsConstructor;
 public class Category {
 
     /**
-     * 主分区ID
+     * 主分区ID (联合主键之一)
      */
     @TableField("mc_id")
     private String mcId;
 
     /**
-     * 子分区ID
+     * 子分区ID (联合主键之一)
      */
     @TableField("sc_id")
     private String scId;

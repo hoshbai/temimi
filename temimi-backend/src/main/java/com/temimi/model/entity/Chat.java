@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 聊天表实体类
+ * 聊天会话表实体类
  * 对应数据库表: chat
  */
 @Data
@@ -39,7 +39,7 @@ public class Chat {
      * 是否移除聊天 0否 1是
      */
     @TableField("is_deleted")
-    private Boolean isDeleted;
+    private Integer isDeleted;
 
     /**
      * 消息未读数量

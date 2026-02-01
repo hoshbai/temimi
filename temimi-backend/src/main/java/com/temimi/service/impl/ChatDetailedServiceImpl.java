@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ChatDetailedServiceImpl extends ServiceImpl<ChatDetailedMapper, ChatDetailed> implements ChatDetailedService {
@@ -24,6 +27,9 @@ public class ChatDetailedServiceImpl extends ServiceImpl<ChatDetailedMapper, Cha
     
     @Autowired
     private ChatService chatService;
+    
+    @Autowired
+    private com.temimi.service.MsgUnreadService msgUnreadService;
     
     @Override
     public Page<ChatDetailed> getChatHistory(Integer userId, Integer anotherId, int pageNum, int pageSize) {
@@ -35,8 +41,34 @@ public class ChatDetailedServiceImpl extends ServiceImpl<ChatDetailedMapper, Cha
                 )
                 .eq("withdraw", BusinessConstants.FALSE)
                 .orderByDesc("time");
-                
+
         return chatDetailedMapper.selectPage(page, queryWrapper);
+    }
+
+    @Override
+    public Map<String, Object> getMoreChatDetails(Integer userId, Integer anotherId, Long offset) {
+        Map<String, Object> result = new HashMap<>();
+        int pageSize = 20;
+
+        QueryWrapper<ChatDetailed> queryWrapper = new QueryWrapper<>();
+        queryWrapper.and(wrapper -> wrapper
+                    .and(w1 -> w1.eq("user_id", userId).eq("another_id", anotherId).eq("user_del", BusinessConstants.FALSE))
+                    .or(w2 -> w2.eq("user_id", anotherId).eq("another_id", userId).eq("another_del", BusinessConstants.FALSE))
+                )
+                .eq("withdraw", BusinessConstants.FALSE)
+                .orderByDesc("time")
+                .last("LIMIT " + offset + ", " + (pageSize + 1));
+
+        List<ChatDetailed> list = chatDetailedMapper.selectList(queryWrapper);
+
+        boolean hasMore = list.size() > pageSize;
+        if (hasMore) {
+            list = list.subList(0, pageSize);
+        }
+
+        result.put("list", list);
+        result.put("hasMore", hasMore);
+        return result;
     }
     
     @Override
@@ -111,5 +143,8 @@ public class ChatDetailedServiceImpl extends ServiceImpl<ChatDetailedMapper, Cha
         // 更新接收方的会话时间和未读数
         chatService.updateLatestTime(receiverChat.getId());
         chatService.incrementUnreadCount(receiverChat.getId());
+        
+        // ✅ 增加接收方的全局私信未读数
+        msgUnreadService.incrementUnreadCount(anotherId, "whisper");
     }
 }

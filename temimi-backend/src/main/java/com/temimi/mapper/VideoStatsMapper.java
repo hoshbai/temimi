@@ -60,4 +60,11 @@ public interface VideoStatsMapper extends BaseMapper<VideoStats> {
      */
     @Update("UPDATE video_stats SET comment = comment + 1 WHERE vid = #{vid}")
     void incrementComment(@Param("vid") Integer vid);
+
+    /**
+     * 增加弹幕数
+     * @param vid 视频ID
+     */
+    @Update("UPDATE video_stats SET danmu = danmu + 1 WHERE vid = #{vid}")
+    void incrementDanmu(@Param("vid") Integer vid);
 }
